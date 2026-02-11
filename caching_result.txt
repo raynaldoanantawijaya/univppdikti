@@ -1,0 +1,12 @@
+Testing API Caching...
+
+1. First Request (Cold Cache) to http://127.0.0.1:8001/search/mahasiswa/Raynaldo
+Status: 200
+Time: 0.0065s
+
+2. Second Request (Warm Cache) to http://127.0.0.1:8001/search/mahasiswa/Raynaldo
+Status: 200
+Time: 0.0046s
+
+SUCCESS: Second request was fast!
+Speed improvement: 1.4x faster
