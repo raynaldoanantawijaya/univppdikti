@@ -51,43 +51,21 @@ class helper:
         
     def get_ip(self) -> Optional[str]:
         """
-        Retrieves the public IP address with caching and better error handling.
+        Retrieves the public IP address.
+        Modified to FORCE use the fallback/spoofed IP to avoid Geo-blocking on Vercel.
         """
-        current_time = time.time()
+        # ON VERCEL: Real IP (US/Singapore) is likely blocked.
+        # We return the hardcoded Indonesian IP to trick the API.
+        return self.decodes(self.ip)
         
-        # Return cached IP if still valid
-        if (self._cached_ip and 
-            current_time - self._ip_cache_time < self._ip_cache_duration):
-            return self._cached_ip
-            
-        try:
-            response = requests.get("https://api.ipify.org?format=json", timeout=10)
-            response.raise_for_status()
-            ip = response.json().get("ip")
-            
-            if not ip:
-                raise APIResponseError("No IP returned from ipify service")
-            
-            # Cache the IP
-            self._cached_ip = ip
-            self._ip_cache_time = current_time
-            self.logger.debug(f"IP address retrieved and cached: {ip}")
-            return ip
-            
-        except requests.Timeout:
-            self.logger.warning("Timeout getting IP address, using fallback")
-            fallback_ip = self.decodes(self.ip)
-            return self._cached_ip or fallback_ip
-            
-        except requests.RequestException as e:
-            self.logger.warning(f"Error fetching IP: {e}, using fallback")
-            fallback_ip = self.decodes(self.ip)
-            return self._cached_ip or fallback_ip
-        
-        except Exception as e:
-            self.logger.error(f"Unexpected error getting IP: {e}")
-            fallback_ip = self.decodes(self.ip)
-            return self._cached_ip or fallback_ip
+        # Original logic disabled:
+        # current_time = time.time()
+        # if (self._cached_ip and 
+        #     current_time - self._ip_cache_time < self._ip_cache_duration):
+        #     return self._cached_ip
+        # try:
+        #     response = requests.get("https://api.ipify.org?format=json", timeout=10)
+        #     ...
 
     def get_headers(self) -> dict:
         """
