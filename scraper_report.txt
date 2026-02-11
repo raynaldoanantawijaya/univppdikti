@@ -1,0 +1,63 @@
+Starting PDDIKTI API Scraper Test...
+
+==================== Global Statistics ====================
+Active Lecturers: {'jumlah_dosen': 303067}
+Active Students: {'jumlah_mahasiswa': 9967487}
+Time taken: 1.40s
+
+==================== University Data ====================
+Searching for: Universitas Gadjah Mada
+Found: UNIVERSITAS GADJAH MADA (ID: T-Zziy0J8OIkAIAAZuseX_ZUKz_YdZ4wjmLWUNL5XZ-C5g5CPj4z53_iutuzaFKU1mVntg==)
+Fetching details...
+University details returned None.
+Fetching study programs...
+Total Study Programs: 354
+-  Doktor Ilmu Administrasi Publik (S3)
+- Agroindustri (D3)
+- Agronomi (S1)
+- Akuakultur (S1)
+- Akuntansi (S1)
+Time taken: 2.71s
+
+==================== Student Data ====================
+Searching for student keyword: Siti
+Found: GITI LESTARI (51603019) at SEKOLAH TINGGI ILMU KESEHATAN SITI KHADIJAH
+Fetching student details...
+{'id': 'FLvsvRQnQ-x49aD5NWLePA2mRDg-pLOlLtq-FBnr57TEafKVJWhOC-pUnzXW8A_PqMPFpA==',
+ 'id_pt': 'DqsfvVMmp84SqLr_XA0XG4UOpKJOM8k9zK5BnL5bwOgnxXeHM6q--v8hG5h0YlUEiBOboA==',
+ 'id_sms': 'lSi9WAmg-i_DjsPI1SnKbIuVBCNYncinSywnPbAJJ30uOkeKUoJegkorHvIAudECLVQwtQ==',
+ 'jenis_daftar': 'Peserta didik baru',
+ 'jenis_kelamin': 'P',
+ 'jenjang': 'Sarjana',
+ 'kode_prodi': '48201',
+ 'kode_pt': '023097  ',
+ 'nama': 'GITI LESTARI',
+ 'nama_pt': 'Sekolah Tinggi Ilmu Kesehatan Siti Khadijah',
+ 'nim': '51603019',
+ 'prodi': 'Farmasi',
+ 'status_saat_ini': 'Lulus-2019/2020 Genap',
+ 'tanggal_masuk': '2016-09-26'}
+Time taken: 0.91s
+
+==================== Lecturer Data ====================
+Searching for lecturer keyword: Budi
+Found: BUDI RIANTO (0422046205) at SEKOLAH TINGGI ILMU KESEHATAN BUDHI LUHUR CIMAHI
+Fetching lecturer profile...
+{'id_sdm': 'ttw2v-39-yJ42faiwiunRMgbt7Iy4cBLgkv-a1kPRDSgMR5Mpo28dBpv2czusCHsP4GupA==',
+ 'jabatan_akademik': 'Lektor',
+ 'jenis_kelamin': 'Laki-laki',
+ 'nama_dosen': 'BUDI RIANTO',
+ 'nama_prodi': 'Ilmu Keperawatan',
+ 'nama_pt': 'Sekolah Tinggi Ilmu Kesehatan Budhi Luhur Cimahi',
+ 'pendidikan_tertinggi': 'S2',
+ 'status_aktivitas': 'Aktif',
+ 'status_ikatan_kerja': 'Dosen Tetap'}
+Fetching research history...
+Found 5 research items.
+- HUBUNGAN BERAT BADAN PADA REMAJA DENGAN TINGKAT KECEMASAN DI SMAN 4 CIMAHI (2024)
+- The Influence of health counseling using video media  on diabetes melitus knowledge level in kertasari health center bandung (2023)
+- PENGARUH EDUKASI SELF MANAGEMENT DIABETES (DSME) DENGAN MEDIA BOOKLET TERHADAP KEPATUHAN DIET PASIEN DM TIPE 2  (2022)
+Time taken: 0.34s
+
+==================== Test Completed ====================
+Total execution time: 5.37s

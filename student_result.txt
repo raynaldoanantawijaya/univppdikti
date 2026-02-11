@@ -1,0 +1,11 @@
+Searching for student: Raynaldo Ananta Wijaya...
+
+Found 1 student(s):
+
+[1] Name: RAYNALDO ANANTA WIJAYA
+    NIM: D400210140
+    University: UNIVERSITAS MUHAMMADIYAH SURAKARTA
+    Program: TEKNIK ELEKTRO
+    Fetching details...
+    Status: Lulus-2024/2025 Genap
+    Entry Year: None
