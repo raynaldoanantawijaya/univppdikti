@@ -103,14 +103,63 @@ def cached_get_dosen_profile(id: str):
 def cached_search_pt(keyword: str):
     logger.info(f"Cache miss - Searching university: {keyword}")
     with api() as client:
-        return client.search_pt(keyword)
+        results = client.search_pt(keyword)
+        
+        # FIX: The API returns the Name in the 'id' field for some reason.
+        # We need to extract the REAL ID from 'website_link' if possible.
+        # Structure: "website_link": "/data_pt/REAL_ID"
+        if results:
+            data_list = []
+            if isinstance(results, list):
+                data_list = results
+            elif isinstance(results, dict) and 'data' in results and isinstance(results['data'], list):
+                data_list = results['data']
+            
+            for item in data_list:
+                if 'website_link' in item and '/data_pt/' in item['website_link']:
+                    real_id = item['website_link'].split('/data_pt/')[-1]
+                    item['id'] = real_id # Overwrite with real ID
+        
+        return results
 
 @lru_cache(maxsize=128)
 @retry(**retry_config)
 def cached_get_detail_pt(id: str):
     logger.info(f"Cache miss - Getting university detail: {id}")
     with api() as client:
-        return client.get_detail_pt(id)
+        try:
+            # Try the standard endpoint first
+            detail = client.get_detail_pt(id)
+            if detail:
+                return detail
+                
+            # If standard endpoint fails (e.g. 404), build a fallback object
+            logger.warning(f"Standard detail endpoint failed for {id}, attempting fallback...")
+            
+            # 1. Fetch Stats (works)
+            stats = client.get_mahasiswa_pt(id) or {}
+            
+            # 2. Fetch Logo (works)
+            logo = client.get_logo_pt(id)
+            
+            # Construct a "Partial" detail object
+            fallback_detail = {
+                "id": id,
+                "nama_pt": "Data Universitas (Limited)", # We don't have the name unless we pass it, but generic is fine or we rely on frontend
+                "kode_pt": stats.get('kode_pt', '-'),
+                "status_pt": "Aktif", # Assumption or missing
+                "alamat": "Alamat tidak tersedia (Endpoint utama bermasalah)",
+                "website": "-",
+                "email": "-",
+                "jumlah_mahasiswa": stats.get('mean_jumlah_baru', 0), # Not exact but something
+                "logo_base64": logo,
+                "fallback_mode": True
+            }
+            return fallback_detail
+            
+        except Exception as e:
+            logger.error(f"Error fetching university details: {e}")
+            return None
 
 
 # --- Endpoints ---

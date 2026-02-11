@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contoh Frontend PDDIKTI</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        #results { border-top: 1px solid #ccc; padding-top: 20px; }
+        .item { background: #f9f9f9; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
+        .loading { color: #666; font-style: italic; }
+        pre { background: #eee; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Cari Mahasiswa</h1>
+    
+    <div class="search-box">
+        <input type="text" id="keyword" placeholder="Masukkan nama mahasiswa..." value="Raynaldo">
+        <button onclick="searchMahasiswa()">Cari</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const API_URL = "https://univppdikti.vercel.app"; // URL API Anda
+
+        async function searchMahasiswa() {
+            const keyword = document.getElementById('keyword').value;
+            const resultsDiv = document.getElementById('results');
+            
+            if (!keyword) return alert("Masukkan kata kunci!");
+
+            resultsDiv.innerHTML = '<p class="loading">Sedang mencari...</p>';
+
+            try {
+                // 1. Panggil API
+                const response = await fetch(`${API_URL}/search/mahasiswa/${keyword}`);
+                
+                // 2. Cek status
+                if (!response.ok) throw new Error("Gagal mengambil data");
+
+                // 3. Ambil JSON
+                const json = await response.json();
+                const data = json.data; // Data ada di dalam properti 'data'
+
+                // 4. Tampilkan Hasil
+                resultsDiv.innerHTML = `<h3>Ditemukan ${json.count} hasil:</h3>`;
+                
+                if (data.length === 0) {
+                    resultsDiv.innerHTML += "<p>Tidak ada data ditemukan.</p>";
+                    return;
+                }
+
+                // Loop setiap mahasiswa
+                data.forEach(mhs => {
+                    const html = `
+                        <div class="item">
+                            <strong>${mhs.text}</strong><br>
+                            <small>${mhs.website_link}</small>
+                            <br>
+                            <button onclick="getDetail('${mhs.website_link}')">Lihat Detail</button>
+                        </div>
+                    `;
+                    resultsDiv.innerHTML += html;
+                });
+
+            } catch (error) {
+                resultsDiv.innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+            }
+        }
+
+        async function getDetail(link) {
+            // link format: /data_mhs/ID_ENCRYPTED
+            const id = link.split('/').pop();
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = '<p class="loading">Mengambil detail...</p>';
+            
+            try {
+                const response = await fetch(`${API_URL}/detail/mahasiswa/${id}`);
+                const detail = await response.json();
+                
+                resultsDiv.innerHTML = `
+                    <button onclick="searchMahasiswa()">Kembali</button>
+                    <h2>Detail Mahasiswa</h2>
+                    <pre>${JSON.stringify(detail, null, 2)}</pre>
+                `;
+            } catch (error) {
+                alert("Gagal mengambil detail: " + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
