@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException, Query
+from fastapi.middleware.cors import CORSMiddleware
 from typing import Optional, List, Dict, Any
 from pddiktipy import api
 import uvicorn
 import logging
 from functools import lru_cache
+from tenacity import retry, stop_after_attempt, wait_fixed, retry_if_exception_type
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -13,6 +15,15 @@ app = FastAPI(
     title="PDDIKTI API Service",
     description="REST API wrapper for pddiktipy library",
     version="1.0.0"
+)
+
+# --- CORS Middleware ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods
+    allow_headers=["*"],  # Allow all headers
 )
 
 # Helper function to normalize list vs dict responses
@@ -49,39 +60,53 @@ def normalize_list_response(response: Any) -> List[Dict[str, Any]]:
         
     return []
 
-# --- Cached Functions ---
+# --- Cached & Retried Functions ---
+
+# Retry configuration: 3 attempts, wait 2 seconds between attempts
+retry_config = {
+    "stop": stop_after_attempt(3),
+    "wait": wait_fixed(2),
+    "retry": retry_if_exception_type(Exception),
+    "reraise": True
+}
 
 @lru_cache(maxsize=128)
+@retry(**retry_config)
 def cached_search_mahasiswa(keyword: str):
     logger.info(f"Cache miss - Searching student: {keyword}")
     with api() as client:
         return client.search_mahasiswa(keyword)
 
 @lru_cache(maxsize=128)
+@retry(**retry_config)
 def cached_get_detail_mhs(id: str):
     logger.info(f"Cache miss - Getting student detail: {id}")
     with api() as client:
         return client.get_detail_mhs(id)
 
 @lru_cache(maxsize=128)
+@retry(**retry_config)
 def cached_search_dosen(keyword: str):
     logger.info(f"Cache miss - Searching lecturer: {keyword}")
     with api() as client:
         return client.search_dosen(keyword)
 
 @lru_cache(maxsize=128)
+@retry(**retry_config)
 def cached_get_dosen_profile(id: str):
     logger.info(f"Cache miss - Getting lecturer profile: {id}")
     with api() as client:
         return client.get_dosen_profile(id)
 
 @lru_cache(maxsize=128)
+@retry(**retry_config)
 def cached_search_pt(keyword: str):
     logger.info(f"Cache miss - Searching university: {keyword}")
     with api() as client:
         return client.search_pt(keyword)
 
 @lru_cache(maxsize=128)
+@retry(**retry_config)
 def cached_get_detail_pt(id: str):
     logger.info(f"Cache miss - Getting university detail: {id}")
     with api() as client:
